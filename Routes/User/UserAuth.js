@@ -20,13 +20,13 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (user) => {
-  const token = crypto.randomBytes(20).toString("hex");
+  const token = crypto.randomBytes(20).toString("hex").toLowerCase();
+  // Store the token in lowercase
   user.emailVerificationToken = token;
-  user.emailVerificationExpires = Date.now() + 600000; // 10 min from now
-
+  user.emailVerificationExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
   await user.save();
 
-  const verificationURL = `https://cyberhunter-six.vercel.app/verify_email/${token}`;
+  const verificationURL = `http://localhost:5173/verifyemail/${token}`;
   const mailOptions = {
     from: process.env.EMAIL,
     to: user.email,
@@ -154,6 +154,54 @@ router.post("/userlogin", loginValidator, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, msg: "Server error login" });
+  }
+});
+
+// verify email
+
+router.get("/verifyemail/:token", async (req, res) => {
+  const { token } = req.params;
+  console.log("Received token:", token);
+
+  try {
+    const now = new Date();
+    console.log("Current Date:", now);
+
+    const checkUser = await AdminRegister.findOne({
+      emailVerificationToken: token.trim().toLowerCase(),
+      emailVerificationExpires: { $gt: now },
+    });
+
+    console.log("checkUser found:", checkUser);
+
+    if (!checkUser) {
+      return res.status(400).json({
+        success: false,
+        msg: "Verification token is invalid or has expired.",
+      });
+    }
+
+    // Check if the user is already verified
+    if (checkUser.isVerified) {
+      return res.status(200).json({
+        success: true,
+        msg: "Email is already verified. You can now log in.",
+      });
+    }
+
+    checkUser.isVerified = true;
+    checkUser.emailVerificationToken = undefined;
+    checkUser.emailVerificationExpires = undefined;
+
+    await checkUser.save();
+
+    res.status(200).json({
+      success: true,
+      msg: "Email has been verified. You can now log in.",
+    });
+  } catch (err) {
+    console.error("Server error:", err);
+    res.status(500).json({ success: false, msg: "Server error" });
   }
 });
 

@@ -20,8 +20,6 @@ const AdminRegisterSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       default: "user",
     },
-    resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
     emailVerificationToken: String,
     emailVerificationExpires: Date,
     isVerified: { type: Boolean, default: false },
