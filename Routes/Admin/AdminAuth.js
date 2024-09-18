@@ -57,12 +57,17 @@ router.post("/register", registerValidator, async (req, res) => {
   // console.log("this is body", req.body);
   let { fullName, email, password, role } = req.body;
 
+  console.log("register", fullName, email, password, role);
+
   const existingUsers = await AdminRegister.findOne({ email });
   if (existingUsers) {
     return res
       .status(400)
       .json({ success: false, message: "user already exists" });
   }
+
+  console.log("existingUsers", existingUsers);
+
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -75,6 +80,9 @@ router.post("/register", registerValidator, async (req, res) => {
       password,
       role: role || "user",
     });
+
+    console.log("newUser", newUser);
+
     // console.log("this is new user", newUser);
     await newUser.save();
     await sendVerificationEmail(newUser);

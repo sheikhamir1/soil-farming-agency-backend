@@ -74,7 +74,7 @@ router.post("/userregister", registerValidator, async (req, res) => {
       email,
       password,
     });
-    // console.log("this is new user", newUser);
+    console.log("this is new user", newUser);
     await newUser.save();
     await sendVerificationEmail(newUser);
 

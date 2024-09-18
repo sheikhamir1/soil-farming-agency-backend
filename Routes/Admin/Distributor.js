@@ -16,6 +16,14 @@ router.post("/addDistributor", CheckIfUserLoggedIn, async (req, res) => {
       .json({ success: false, message: "Unauthorized access" });
   }
   //   console.log("CheckAdmin", CheckAdmin);
+
+  const checkEmail = await Distributor.findOne({ email: req.body.email });
+  if (checkEmail) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email already exists" });
+  }
+
   const {
     name,
     contactPerson,
@@ -39,6 +47,9 @@ router.post("/addDistributor", CheckIfUserLoggedIn, async (req, res) => {
       rating,
       isActive,
     });
+
+    console.log("distributor", distributor);
+
     await distributor.save();
     res.status(201).json({
       success: true,
