@@ -1,10 +1,17 @@
-How to run the server
+## How to Run the Server
 
-Installation Clone the Repository
+### Installation
 
-git clone https://github.com/sheikhamir1/soil-farming-agency-backend.git Navigate to the Project Directory
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/sheikhamir1/soil-farming-agency-backend.git
+   ```
+2. **Navigate to the Project Directory:**
+   cd soil-farming-agency
+   
+3. **Install Dependencies:**
+   npm install
 
-cd soil-farming-agency Install Dependencies
-npm install
+3. **Run the Server::**
+   nodemon index.js
 
-then run : nodemon index.js to run the server 
